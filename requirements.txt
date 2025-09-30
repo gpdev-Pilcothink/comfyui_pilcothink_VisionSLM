@@ -1,0 +1,13 @@
+torch
+transformers
+accelerate
+safetensors
+sentencepiece
+tokenizers
+pillow
+numpy
+faiss-cpu
+timm
+opencv-python
+protobuf
+sentence-transformers
