@@ -18,10 +18,14 @@ https://github.com/QwenLM/Qwen3-VL, Apache-2.0 license
 
 # Tips
 
-If you choose the CPU option on the device, it will only work with bloat16. Other dtypes will result in errors.
+(1) If you choose the CPU option on the device, it will only work with bloat16. Other dtypes will result in errors.
 
-You can enable RAG functionality by placing your data in the rag_doc folder in .txt format.
+(2) You can enable RAG functionality by placing your data in the rag_doc folder in .txt format.
 
+(3) Since gemma-3-4b-it cannot be accessed on Hugging Face without logging in, you will need to configure it separately, or alternatively, download it directly from the repository and place it in the Models folder.
+
+
+#Thank you
 Please share any suggestions for improvements in the Issues section.
 
-Moondream may be updated in the future. If you are aware of any other low-cost vision models, I would appreciate it if you could let me know.
+Moondream2 may be updated in the future. If you are aware of any other low-cost vision models, I would appreciate it if you could let me know.
