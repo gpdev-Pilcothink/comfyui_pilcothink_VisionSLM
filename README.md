@@ -1,6 +1,9 @@
 # comfyUI_pilcothink_VisionSLM
 
 Custom ComfyUI nodes to run SLM Vision models (DeepSeek-vl 1.3b chat, Qwen2.5-vl 3b, Gemma-3-4b-it) with optional RAG support.
+<img width="2645" height="1288" alt="image" src="https://github.com/user-attachments/assets/739c01a6-ac6b-4067-97f7-4ace33c8536c" />
+
+
 
 - Models are downloaded into `Models/SLM_Vision/` when selected in the node.
 
