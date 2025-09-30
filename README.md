@@ -14,3 +14,14 @@ https://github.com/deepseek-ai/DeepSeek-VL, MIT LICENSE
 
 -utils/backends/qwen_vl_utils
 https://github.com/QwenLM/Qwen3-VL, Apache-2.0 license
+
+
+# Tips
+
+If you choose the CPU option on the device, it will only work with bloat16. Other dtypes will result in errors.
+
+You can enable RAG functionality by placing your data in the rag_doc folder in .txt format.
+
+Please share any suggestions for improvements in the Issues section.
+
+Moondream may be updated in the future. If you are aware of any other low-cost vision models, I would appreciate it if you could let me know.
