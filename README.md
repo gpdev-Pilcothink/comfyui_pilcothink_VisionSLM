@@ -5,7 +5,7 @@ Custom ComfyUI nodes to run SLM Vision models (DeepSeek-vl 1.3b chat, Qwen2.5-vl
 - Models are downloaded into `Models/SLM_Vision/` when selected in the node.
 
 
-<<LICENSE>>
+<LICENSE>
 **utils/backends/DeepSeek-vl 
 https://github.com/deepseek-ai/DeepSeek-VL, MIT LICENSE
 
