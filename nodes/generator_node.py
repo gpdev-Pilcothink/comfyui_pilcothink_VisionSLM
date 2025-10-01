@@ -126,58 +126,72 @@ class SLMVisionGenerator:
 
     @classmethod
     def INPUT_TYPES(cls):
-        # 동적 파일 목록 로딩
-        rag_choices = list_rag_txt_files()
-        if not rag_choices:
-            rag_choices = ["(no_txt_found)"]
-
         return {
             "required": {
+                "seed": ("INT", {"default": 0, "min": 0, "max": 999999}),
                 "image": ("IMAGE",),
                 "slm_model": ("SLM_MODEL",),
-                "prompt": ("STRING", {"multiline": True, "default": "Describe the image."}),
-                "use_rag": ("BOOLEAN", {"default": False}),
-                "rag_txt": (rag_choices, {"default": rag_choices[0]}),
+                "user_prompt": ("STRING", {"forceInput": True}),  # RAG 컨텍스트는 입력으로 받음
                 "max_new_tokens": ("INT", {"default": 256, "min": 1, "max": 4096}),
                 "temperature": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 2.0, "step": 0.01}),
                 "top_p": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "top_k": ("INT", {"default": 50, "min": 0, "max": 1000}),  # 추가
+                "repetition_penalty": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 3.0, "step": 0.1}),  # 추가
             }
         }
 
     RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text",)
+    RETURN_NAMES = ("SLM_TEXT",)
     FUNCTION = "generate"
     CATEGORY = "SLM‑Vision"
 
-    def _compose_prompt(self, prompt: str, rag_context: Optional[str]) -> str:
-        if rag_context:
-            return (
-                "You may use the following context to answer concisely.\n"
-                f"[CONTEXT]\n{rag_context}\n[/CONTEXT]\n\n"
-                f"{prompt}"
-            )
-        return prompt
-
-    def generate(self, image, slm_model, prompt, use_rag, rag_txt, max_new_tokens, temperature, top_p):
+    def generate(self, seed, image, slm_model, user_prompt, max_new_tokens, temperature, top_p, top_k, repetition_penalty):
         pil_image = _tensor_to_pil(image)
-
-        # RAG
-        rag_context = None
-        if use_rag and rag_txt != "(no_txt_found)":
-            index = build_or_load_index(rag_txt)   # 임베딩 인덱스 빌드/로드
-            rag_context = query_with_rag(index, prompt, k=4)
-
-        final_prompt = self._compose_prompt(prompt, rag_context)
 
         # 모델 준비/호출
         gen = _get_generator(
             slm_model["loader"], slm_model["local_path"], slm_model["device"], slm_model["dtype"]
         )
-        output_text = gen.generate(
-            image=pil_image,
-            prompt=final_prompt,
-            max_new_tokens=max_new_tokens,
-            temperature=temperature,
-            top_p=top_p,
-        )
+
+        if top_k == 0 and repetition_penalty == 0.0:
+            output_text = gen.generate(
+                image=pil_image,
+                prompt=user_prompt,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                # top_k=top_k,
+                # repetition_penalty=repetition_penalty,
+            )
+        elif top_k == 0:
+            output_text = gen.generate(
+                image=pil_image,
+                prompt=user_prompt,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                # top_k=top_k,
+                repetition_penalty=repetition_penalty,
+            )
+        elif repetition_penalty == 0.0:
+            output_text = gen.generate(
+                image=pil_image,
+                prompt=user_prompt,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                top_k=top_k,
+                #repetition_penalty=repetition_penalty,
+            )
+        else :
+            output_text = gen.generate(
+                image=pil_image,
+                prompt=user_prompt,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+                top_p=top_p,
+                top_k=top_k,
+                repetition_penalty=repetition_penalty,
+            )
+
         return (output_text,)
