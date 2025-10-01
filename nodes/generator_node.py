@@ -90,7 +90,7 @@ from ..utils.rag_engine import (
 )
 # 각 모델 로더
 from ..utils.Generator.gen_deepseek_vl import DeepseekVL13BGenerator
-from ..utils.Generator.gen_qwen import QwenVL3BGenerator
+from ..utils.Generator.gen_qwen import QwenVLGenerator
 from ..utils.Generator.gen_gemma import Gemma3_4B_IT_Generator
 
 
@@ -105,7 +105,7 @@ def _get_generator(loader_key, local_path, device, dtype):
     if loader_key == "deepseek_vl":
         gen = DeepseekVL13BGenerator.from_pretrained(local_path, device=device, dtype=dtype)
     elif loader_key == "qwen":
-        gen = QwenVL3BGenerator.from_pretrained(local_path, device=device, dtype=dtype)
+        gen = QwenVLGenerator.from_pretrained(local_path, device=device, dtype=dtype)
     elif loader_key == "gemma":
         gen = Gemma3_4B_IT_Generator.from_pretrained(local_path, device=device, dtype=dtype)
     elif loader_key == "moondream2":
