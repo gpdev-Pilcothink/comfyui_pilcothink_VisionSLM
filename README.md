@@ -18,7 +18,7 @@ https://github.com/QwenLM/Qwen3-VL, Apache-2.0 license
 
 # Tips
 
-(1) If you choose the CPU option on the device, it will only work with bloat16. Other dtypes will result in errors.
+(1) If you choose the CPU option on the device, it will only work with bfloat16. Other dtypes will result in errors.
 
 (2) You can enable RAG functionality by placing your data in the rag_doc folder in .txt format.
 
