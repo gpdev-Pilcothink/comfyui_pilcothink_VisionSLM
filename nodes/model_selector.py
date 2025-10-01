@@ -20,6 +20,10 @@ MODEL_TABLE = {
         "repo_id": "deepseek-ai/deepseek-vl-1.3b-chat",
         "loader": "deepseek_vl",
     },
+    "qwen2-VL-2B": {
+        "repo_id": "Qwen/Qwen2-VL-2B",
+        "loader": "qwen",
+    },
     "qwen2.5-vl-3b-instruct": {
         "repo_id": "Qwen/Qwen2.5-VL-3B-Instruct",
         "loader": "qwen",
