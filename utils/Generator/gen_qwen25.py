@@ -8,7 +8,7 @@ backend_aliases.setup_backend_path()
 from qwen_vl_utils.src.qwen_vl_utils.vision_process import process_vision_info
 
 
-class QwenVLGenerator:
+class QwenVL25Generator:
     def __init__(self, model, processor, device, dtype):
         self.model = model
         self.processor = processor

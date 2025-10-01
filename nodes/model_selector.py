@@ -22,11 +22,11 @@ MODEL_TABLE = {
     },
     "qwen2-VL-2B": {
         "repo_id": "Qwen/Qwen2-VL-2B",
-        "loader": "qwen",
+        "loader": "qwen2",
     },
     "qwen2.5-vl-3b-instruct": {
         "repo_id": "Qwen/Qwen2.5-VL-3B-Instruct",
-        "loader": "qwen",
+        "loader": "qwen25",
     },
     "gemma-3-4b-it": {
         "repo_id": "google/gemma-3-4b-it",
