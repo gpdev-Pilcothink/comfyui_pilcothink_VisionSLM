@@ -1,6 +1,6 @@
 import torch
 from transformers import AutoProcessor
-from transformers import AutoProcessor, Qwen2VLForConditionalGeneration, Qwen2_5_VLForConditionalGeneration
+from transformers import Qwen2_5_VLForConditionalGeneration
 
 from .. import backend_aliases
 backend_aliases.setup_backend_path()
@@ -9,17 +9,15 @@ from qwen_vl_utils.src.qwen_vl_utils.vision_process import process_vision_info
 
 
 class QwenVLGenerator:
-    def __init__(self, model, processor, device, dtype, version="2.5"):
+    def __init__(self, model, processor, device, dtype):
         self.model = model
         self.processor = processor
         self.device = device
         self.dtype = dtype
-        self.version = version
 
     @classmethod
-    def from_pretrained(cls, local_path, version="2.5", device="cuda", dtype="bfloat16"):
-        model_cls = Qwen2_5_VLForConditionalGeneration if version == "2.5" else Qwen2VLForConditionalGeneration
-
+    def from_pretrained(cls, local_path, device="cuda", dtype="bfloat16"):
+        # Qwen은 device_map="auto"가 편함
         torch_dtype = {
             "bfloat16": torch.bfloat16,
             "float16": torch.float16,
@@ -27,15 +25,33 @@ class QwenVLGenerator:
         }.get(dtype, "auto")
 
         if torch_dtype == "auto":
-            model = model_cls.from_pretrained(local_path, torch_dtype="auto", device_map="auto")
+            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                local_path, torch_dtype="auto", device_map="auto"
+            )
         else:
             if device == "cuda":
-                model = model_cls.from_pretrained(local_path, torch_dtype=torch_dtype, device_map="auto")
+                model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                    local_path, torch_dtype=torch_dtype, device_map="auto"
+                )
             else:
-                model = model_cls.from_pretrained(local_path, torch_dtype=torch.float32, device_map={"": "cpu"})
-
+                model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+                    local_path, torch_dtype=torch.float32, device_map={"": "cpu"}
+                )
         processor = AutoProcessor.from_pretrained(local_path)
-        return cls(model, processor, device, dtype, version)
+        return cls(model, processor, device, dtype)
+
+    def _messages(self, img_path, prompt, system=None):
+        msgs = []
+        if system:
+            msgs.append({"role": "system", "content": [{"type": "text", "text": system}]})
+        msgs.append({
+            "role": "user",
+            "content": [
+                {"type": "image", "image": img_path},
+                {"type": "text", "text": prompt},
+            ],
+        })
+        return msgs
 
     def generate(self, image, prompt, max_new_tokens=256, temperature=0.0, top_p=1.0):
         import tempfile
@@ -46,20 +62,15 @@ class QwenVLGenerator:
 
         messages = self._messages(tmp.name, prompt)
         text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        image_inputs, video_inputs = process_vision_info(messages)
 
-        if self.version == "2.5":
-            image_inputs, video_inputs, video_kwargs = process_vision_info(messages, return_video_kwargs=True)
-            inputs = self.processor(
-                text=[text], images=image_inputs, videos=video_inputs,
-                padding=True, return_tensors="pt", **video_kwargs
-            )
-        else:
-            image_inputs, video_inputs = process_vision_info(messages)
-            inputs = self.processor(
-                text=[text], images=image_inputs, videos=video_inputs,
-                padding=True, return_tensors="pt"
-            )
-
+        inputs = self.processor(
+            text=[text],
+            images=image_inputs,
+            videos=video_inputs,
+            padding=True,
+            return_tensors="pt",
+        )
         inputs = inputs.to(self.model.device)
 
         gen_ids = self.model.generate(
