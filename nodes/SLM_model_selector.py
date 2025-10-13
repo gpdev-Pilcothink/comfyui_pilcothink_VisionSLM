@@ -12,35 +12,17 @@ def _plugin_root():
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def _models_dir():
-    return os.path.join(_plugin_root(), "Models", "VisionSLM")
+    return os.path.join(_plugin_root(), "Models", "SLM")
 
 # 모델 식별자(ComfyUI UI 표시용 라벨 -> HF repo_id, 내부 로더 키)
 MODEL_TABLE = {
-    "deepseek-vl-1.3b-chat": {
-        "repo_id": "deepseek-ai/deepseek-vl-1.3b-chat",
-        "loader": "deepseek_vl",
-    },
-    "Qwen2-VL-2B-Instruct": {
-        "repo_id": "Qwen/Qwen2-VL-2B-Instruct",
-        "loader": "qwen2",
-    },
-    "qwen2.5-vl-3b-instruct": {
-        "repo_id": "Qwen/Qwen2.5-VL-3B-Instruct",
-        "loader": "qwen25",
-    },
-    "gemma-3-4b-it": {
-        "repo_id": "google/gemma-3-4b-it",
-        "loader": "gemma",
-    },
-    # moondream2는 업데이트 예정 중입니다.(취소 될 수도 있음)
-    "moondream2": {
-        "repo_id": "vikhyatk/moondream2",  # placeholder
-        "loader": "moondream2",
+    "Qwen3-0.6B": {
+        "repo_id": "Qwen/Qwen3-0.6B",
+        "loader": "Qwen3",
     },
 }
 
-
-class SLMVisionModelSelector:
+class SLMModelSelector:
     """
     - 모델을 선택하고, 없으면 Models/에 다운로드
     - 다음 노드가 사용할 수 있도록 구성 딕셔너리(SLM_MODEL)를 반환
@@ -50,7 +32,7 @@ class SLMVisionModelSelector:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model": (list(MODEL_TABLE.keys()), {"default": "deepseek-vl-1.3b-chat"}),
+                "model": (list(MODEL_TABLE.keys()), {"default": "Qwen/Qwen3-0.6B"}),
                 "device": (["auto", "cuda", "cpu"], {"default": "auto"}),
                 "dtype": (["auto", "bfloat16", "float16", "float32"], {"default": "auto"}),
                 "download_if_missing": ("BOOLEAN", {"default": True}),

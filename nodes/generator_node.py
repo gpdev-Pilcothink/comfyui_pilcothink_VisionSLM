@@ -89,11 +89,10 @@ from ..utils.rag_engine import (
     query_with_rag,
 )
 # 각 모델 로더
-from ..utils.Generator.gen_deepseek_vl import DeepseekVL13BGenerator
-from ..utils.Generator.gen_qwen2 import QwenVL2Generator
-from ..utils.Generator.gen_qwen25 import QwenVL25Generator
-from ..utils.Generator.gen_gemma import Gemma3_4B_IT_Generator
-
+from ..utils.Generator.VisionSLM.gen_deepseek_vl import DeepseekVL13BGenerator
+from ..utils.Generator.VisionSLM.gen_qwen2 import QwenVL2Generator
+from ..utils.Generator.VisionSLM.gen_qwen25 import QwenVL25Generator
+from ..utils.Generator.VisionSLM.gen_gemma import Gemma3_4B_IT_Generator
 
 # 간단한 메모리 캐시(세션 내 재사용)
 _MODEL_CACHE = {}
