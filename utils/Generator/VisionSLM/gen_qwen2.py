@@ -49,7 +49,7 @@ class QwenVL2Generator:
         })
         return msgs
 
-    def generate(self, image, prompt, max_new_tokens=256, temperature=0.0, top_p=1.0):
+    def generate(self, image, prompt, max_new_tokens=1024, temperature=0.85, top_p=0.9, top_k=0, repetition_penalty=0.0):
         import tempfile
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         image.save(tmp.name, format="PNG")

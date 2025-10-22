@@ -1,6 +1,6 @@
 attrdict
 torch
-transformers
+transformers >= 4.56.2
 accelerate
 safetensors
 sentencepiece

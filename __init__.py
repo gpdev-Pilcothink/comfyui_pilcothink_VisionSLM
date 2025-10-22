@@ -1,13 +1,13 @@
 # __init__.py
 # ComfyUI 노드 매핑
 
-from .nodes.model_selector import SLMVisionModelSelector
-from .nodes.generator_node import SLMVisionGenerator
+from .nodes.Vision_model_selector import SLMVisionModelSelector
+from .nodes.Vision_generator_node import SLMVisionGenerator
 from .nodes.SLM_model_selector import SLMModelSelector
 from .nodes.SLM_generator_node import SLMGenerator
 from .nodes.rag_node import SLMVisionRAGNode
 
-from .nodes.merge_texts_with_gap import MergeTextsWithGap, String_Text
+from .nodes.merge_texts_with_gap import MergeTextsWithGap, String_Text, RemoveSpecificPatterns
 
 
 NODE_CLASS_MAPPINGS = {
@@ -23,20 +23,22 @@ NODE_CLASS_MAPPINGS = {
 
     "MergeTextsWithGap": MergeTextsWithGap,
     "String_Text": String_Text,
+    "RemoveSpecificPatterns": RemoveSpecificPatterns
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "SLMVisionModelSelector": "SLM‑Vision: Model Selector",
-    "SLMVisionGenerator":   "SLM‑Vision: Generator (Vision + optional RAG)",
+    "SLMVisionModelSelector": "Vision-SLM: Model Selector",
+    "SLMVisionGenerator":   "Vision-SLM: Generator",
 
 
     "SLMModelSelector": "SLM: Model Selector",
-    "SLMGenerator": "SLM: Generator (optional RAG)",
+    "SLMGenerator": "SLM: Generator",
 
 
-    "Pilcothink-RAG": "SLM-Vision: Pilcothink-RAG",
+    "Pilcothink-RAG": "Prompt+RAG",
 
 
     "MergeTextsWithGap": "Merge Texts With Gap",
     "String_Text": "String Text",
+    "RemoveSpecificPatterns": "Remove Specific Patterns"
 }

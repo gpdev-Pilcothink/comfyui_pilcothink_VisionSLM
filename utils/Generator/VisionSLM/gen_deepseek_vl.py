@@ -44,7 +44,7 @@ class DeepseekVL13BGenerator:
             {"role": "Assistant", "content": ""},
         ]
 
-    def generate(self, image, prompt, max_new_tokens=256, temperature=0.0, top_p=1.0):
+    def generate(self, image, prompt, max_new_tokens=1024, temperature=0.85, top_p=0.9, top_k=0, repetition_penalty=0.0):
         # 이미지 임시 파일로 저장(라이브러리 유틸이 경로 기반으로 동작)
         import tempfile
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
@@ -70,8 +70,6 @@ class DeepseekVL13BGenerator:
             eos_token_id=self.tokenizer.eos_token_id,
             max_new_tokens=max_new_tokens,
             do_sample=(temperature > 0.0),
-            temperature=temperature if temperature > 0.0 else None,
-            top_p=top_p if temperature > 0.0 else None,
             use_cache=True,
         )
 

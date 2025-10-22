@@ -1,14 +1,13 @@
 import torch
-from transformers import AutoProcessor
-from transformers import Qwen2_5_VLForConditionalGeneration
-
+from transformers import Qwen3VLForConditionalGeneration, AutoProcessor
 from ... import backend_aliases
+
 backend_aliases.setup_backend_path()
 
 from qwen_vl_utils.src.qwen_vl_utils.vision_process import process_vision_info
 
 
-class QwenVL25Generator:
+class QwenVL3Generator:
     def __init__(self, model, processor, device, dtype):
         self.model = model
         self.processor = processor
@@ -16,22 +15,21 @@ class QwenVL25Generator:
         self.dtype = dtype
 
     @classmethod
-    def from_pretrained(cls, local_path, device="CPU", dtype="float32"):
+    def from_pretrained(cls, local_path, device="auto", dtype="auto"):
         torch_dtype = {
             "bfloat16": torch.bfloat16,
             "float16": torch.float16,
             "float32": torch.float32,
-        }.get(dtype, torch.float32 if device == "CPU" else torch.float16)
+        }.get(dtype, torch.float16 if device == "cuda" else torch.float32)
 
         if device == "cuda":
-            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            model = Qwen3VLForConditionalGeneration.from_pretrained(
                 local_path, torch_dtype=torch_dtype, device_map="auto"
             )
         else:
-            model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+            model = Qwen3VLForConditionalGeneration.from_pretrained(
                 local_path, torch_dtype=torch_dtype, device_map={"": "cpu"}
             )
-
 
         processor = AutoProcessor.from_pretrained(local_path)
         return cls(model, processor, device, dtype)
@@ -49,7 +47,7 @@ class QwenVL25Generator:
         })
         return msgs
 
-    def generate(self, image, prompt, max_new_tokens=1024, temperature=0.85, top_p=0.9, top_k=0, repetition_penalty=0.0):
+    def generate(self, image, prompt, max_new_tokens=1024, temperature=0.7, top_p=0.8, top_k=20, repetition_penalty=1.0):
         import tempfile
         tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
         image.save(tmp.name, format="PNG")
@@ -66,8 +64,7 @@ class QwenVL25Generator:
             videos=video_inputs,
             padding=True,
             return_tensors="pt",
-        )
-        inputs = inputs.to(self.model.device)
+        ).to(self.model.device)
 
         gen_ids = self.model.generate(
             **inputs,
@@ -75,7 +72,10 @@ class QwenVL25Generator:
             do_sample=(temperature > 0.0),
             temperature=temperature if temperature > 0.0 else None,
             top_p=top_p if temperature > 0.0 else None,
+            top_k=top_k if temperature > 0 else None,             # ← top_k 추가
+            repetition_penalty=repetition_penalty if repetition_penalty > 0 else None,
         )
+
         gen_ids_trimmed = [out_ids[len(in_ids):] for in_ids, out_ids in zip(inputs.input_ids, gen_ids)]
         text_out = self.processor.batch_decode(
             gen_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
