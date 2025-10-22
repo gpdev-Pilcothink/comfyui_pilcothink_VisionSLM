@@ -3,7 +3,9 @@
 Custom ComfyUI nodes to run SLM Vision models (DeepSeek-vl 1.3b chat, Qwen2-vl-2b-Instruct, Qwen2.5-vl 3b, qwen3-vl(2b,4b)[Instruct, Thinking] , Gemma-3-4b-it) with optional RAG support.
 +
 Support SLM Model (Qwen3-0.6b)
-<img width="2642" height="1773" alt="image" src="https://github.com/user-attachments/assets/2fc0e71f-7e37-4a56-8595-984afedd3a42" />
+
+
+<img width="2596" height="1712" alt="image" src="https://github.com/user-attachments/assets/74130f20-7717-4a9a-a8c8-91776bcbed59" />
 <img width="3323" height="1048" alt="image" src="https://github.com/user-attachments/assets/34375235-325c-449a-8396-eec99ed19673" />
 
 
