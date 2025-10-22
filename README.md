@@ -1,9 +1,10 @@
 # comfyUI_pilcothink_VisionSLM
 
-Custom ComfyUI nodes to run SLM Vision models (DeepSeek-vl 1.3b chat, Qwen2-vl-2b-Instruct, Qwen2.5-vl 3b, Gemma-3-4b-it) with optional RAG support.
+Custom ComfyUI nodes to run SLM Vision models (DeepSeek-vl 1.3b chat, Qwen2-vl-2b-Instruct, Qwen2.5-vl 3b, qwen3-vl(2b,4b)[Instruct, Thinking] , Gemma-3-4b-it) with optional RAG support.
 +
 Support SLM Model (Qwen3-0.6b)
-<img width="2645" height="1288" alt="image" src="https://github.com/user-attachments/assets/739c01a6-ac6b-4067-97f7-4ace33c8536c" />
+<img width="2642" height="1773" alt="image" src="https://github.com/user-attachments/assets/2fc0e71f-7e37-4a56-8595-984afedd3a42" />
+<img width="3323" height="1048" alt="image" src="https://github.com/user-attachments/assets/34375235-325c-449a-8396-eec99ed19673" />
 
 
 
@@ -20,14 +21,13 @@ https://github.com/QwenLM/Qwen3-VL, Apache-2.0 license
 
 # Tips
 
-(1) If you choose the CPU option on the device, it will only work with bfloat16. Other dtypes will result in errors.
+(1) If you choose the CPU option on the device, it will only work with float16. Other dtypes will result in errors.
 
 (2) You can enable RAG functionality by placing your data in the rag_doc folder in .txt format.
 
 (3) Since gemma-3-4b-it cannot be accessed on Hugging Face without logging in, you will need to configure it separately, or alternatively, download it directly from the repository and place it in the Models folder.
 
+(4) If you want to unload the model from memory, simply switch off the 'Use Cache' option and execute the model again.
 
 #Thank you
 Please share any suggestions for improvements in the Issues section.
-
-Moondream2 may be updated in the future. If you are aware of any other low-cost vision models, I would appreciate it if you could let me know.
