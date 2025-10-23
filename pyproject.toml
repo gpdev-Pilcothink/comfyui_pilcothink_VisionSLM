@@ -1,0 +1,37 @@
+[project]
+name = "pilcothink_visionslm"
+description = "Custom ComfyUI nodes to run SLM Vision models (DeepSeek-vl 1.3b chat, Qwen2.5-vl 3b, Gemma-3-4b-it) with optional RAG support."
+version = "1.0.0"
+license = {file = "LICENSE"} 
+# classifiers = [
+#     # For OS-independent nodes (works on all operating systems)
+#     "Operating System :: OS Independent",
+#
+#     # OR for OS-specific nodes, specify the supported systems:
+#     "Operating System :: Microsoft :: Windows",  # Windows specific
+#     "Operating System :: POSIX :: Linux",  # Linux specific
+#     "Operating System :: MacOS",  # macOS specific
+#
+#     # GPU Accelerator support. Pick the ones that are supported by your extension.
+#     "Environment :: GPU :: NVIDIA CUDA",    # NVIDIA CUDA support
+#     "Environment :: GPU :: AMD ROCm",       # AMD ROCm support
+#     "Environment :: GPU :: Intel Arc",      # Intel Arc support
+#     "Environment :: NPU :: Huawei Ascend",  # Huawei Ascend support
+#     "Environment :: GPU :: Apple Metal",    # Apple Metal support
+# ]
+
+dependencies = ["attrdict", "torch", "transformers >= 4.56.2", "accelerate", "safetensors", "sentencepiece", "tokenizers", "pillow", "numpy", "faiss-cpu", "timm", "opencv-python", "protobuf", "sentence-transformers"]
+
+[project.urls]
+Repository = "https://github.com/gpdev-Pilcothink/comfyui_pilcothink_VisionSLM"
+#  Used by Comfy Registry https://registry.comfy.org
+Documentation = "https://github.com/gpdev-Pilcothink/comfyui_pilcothink_VisionSLM/wiki"
+"Bug Tracker" = "https://github.com/gpdev-Pilcothink/comfyui_pilcothink_VisionSLM/issues"
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "comfyui_pilcothink_VisionSLM"
+Icon = ""
+includes = [] 
+# "requires-comfyui" = ">=1.0.0"  # ComfyUI version compatibility
+
