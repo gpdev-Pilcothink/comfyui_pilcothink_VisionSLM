@@ -17,7 +17,7 @@ def _models_dir():
 # 모델 식별자(ComfyUI UI 표시용 라벨 -> HF repo_id, 내부 로더 키)
 MODEL_TABLE = {
     "Qwen3-0.6B": {
-        "repo_id": "Qwen3-0.6B",
+        "repo_id": "Qwen/Qwen3-0.6B",
         "loader": "Qwen3",
     },
 }
@@ -32,7 +32,7 @@ class SLMModelSelector:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "model": (list(MODEL_TABLE.keys()), {"default": "Qwen/Qwen3-0.6B"}),
+                "model": (list(MODEL_TABLE.keys()), {"default": "Qwen3-0.6B"}),
                 "device": (["auto", "cuda", "cpu"], {"default": "auto"}),
                 "dtype": (["auto", "bfloat16", "float16", "float32"], {"default": "auto"}),
                 "download_if_missing": ("BOOLEAN", {"default": True}),
