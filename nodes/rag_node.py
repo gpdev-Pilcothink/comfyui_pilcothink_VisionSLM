@@ -34,7 +34,7 @@ class SLMVisionRAGNode:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("final_prompt",)
     FUNCTION = "generate"
-    CATEGORY = "SLM‑Vision"
+    CATEGORY = "Pilcothink/RAG_Prompt"
 
     def _compose_prompt(self, prompt: str, rag_context: Optional[str]) -> str:
         if rag_context:

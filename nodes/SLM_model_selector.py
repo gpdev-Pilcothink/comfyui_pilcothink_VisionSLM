@@ -42,7 +42,7 @@ class SLMModelSelector:
     RETURN_TYPES = ("SLM_MODEL", "STRING")
     RETURN_NAMES = ("slm_model", "model_path")
     FUNCTION = "select"
-    CATEGORY = "SLM‑Vision"
+    CATEGORY = "Pilcothink/SLM"
 
     def _decide_device(self, device):
         if device == "auto":

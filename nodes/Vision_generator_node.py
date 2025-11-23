@@ -204,7 +204,7 @@ class SLMVisionGenerator:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("SLM_TEXT",)
     FUNCTION = "generate"
-    CATEGORY = "SLM-Vision"
+    CATEGORY = "Pilcothink/SLM-Vision"
 
     def generate(self, seed, image, slm_model, user_prompt, max_new_tokens, temperature, top_p, top_k, repetition_penalty, use_model_cache):
         pil_image = _tensor_to_pil(image)

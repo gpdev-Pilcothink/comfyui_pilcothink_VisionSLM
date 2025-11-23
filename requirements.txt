@@ -1,6 +1,6 @@
 attrdict
 torch
-transformers >= 4.56.2
+transformers
 accelerate
 safetensors
 sentencepiece
@@ -12,3 +12,4 @@ timm
 opencv-python
 protobuf
 sentence-transformers
+requests

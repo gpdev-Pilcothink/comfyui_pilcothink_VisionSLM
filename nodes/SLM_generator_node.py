@@ -102,7 +102,7 @@ class SLMGenerator:
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("SLM_TEXT",)
     FUNCTION = "generate"
-    CATEGORY = "SLM"
+    CATEGORY = "Pilcothink/SLM"
 
     def generate(
         self,
