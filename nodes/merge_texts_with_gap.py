@@ -34,16 +34,16 @@ class String_Text:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "text1": ("STRING", {"multiline": True, "default": ""}),
+                "text": ("STRING", {"multiline": True, "default": ""}),
             }
         }
 
     RETURN_TYPES = ("STRING",)
-    FUNCTION = "merge_texts"
+    FUNCTION = "return_texts"
     CATEGORY = "Pilcothink/Text"
 
-    def return_texts(self, text1):
-        return (text1,)
+    def return_texts(self, text):
+        return (text,)
     
 
 class RemoveSpecificPatterns:
