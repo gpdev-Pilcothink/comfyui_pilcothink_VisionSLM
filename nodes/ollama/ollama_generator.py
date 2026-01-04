@@ -81,27 +81,6 @@ def _split_thinking_and_answer_from_text(text: str) -> Tuple[str, str]:
 
 
 class OllamaGenerator:
-    """
-    Ollama /api/generate 엔드포인트를 호출해서 텍스트/비전 응답을 가져오는 노드.
-
-    - OllamaConnective 노드에서 선택한 모델을 사용한다.
-    - Thinking 모델인 경우, 스트리밍 이벤트의 'thinking' / 'response' 를
-      각각 모아서 thinking/text 로 나눈다.
-
-    입력:
-      - connection   (OLLAMA_CONNECTION): OllamaConnective 노드 출력
-      - system_prompt: 시스템 프롬프트 (generate.system)
-      - prompt       : USER 프롬프트 (generate.prompt)
-      - image        : 선택, 비전 언어 모델일 때만 사용 (IMAGE 타입 → images[])
-      - temperature  : 샘플링 온도
-      - top_p        : top-p
-      - max_tokens   : 최대 생성 토큰 수 (num_predict)
-
-    출력:
-      - text    : 최종 답변 (Thinking 제거됨)
-      - thinking: Thinking / 체인오브쏘트 텍스트
-    """
-
     CATEGORY = "Pilcothink/Ollama"
 
     @classmethod
@@ -110,47 +89,14 @@ class OllamaGenerator:
             "required": {
                 "seed": ("INT", {"default": 0, "min": 0, "max": 999999}),
                 "connection": ("OLLAMA_CONNECTION", {"forceInput": True}),
-                "system_prompt": (
-                    "STRING",
-                    {
-                        "default": "",
-                        "multiline": True,
-                    },
-                ),
-                "prompt": (
-                    "STRING",
-                    {
-                        "default": "Describe the image.",
-                        "multiline": True,
-                    },
-                ),
-                "temperature": (
-                    "FLOAT",
-                    {
-                        "default": 0.7,
-                        "min": 0.0,
-                        "max": 2.0,
-                        "step": 0.01,
-                    },
-                ),
-                "top_p": (
-                    "FLOAT",
-                    {
-                        "default": 0.9,
-                        "min": 0.0,
-                        "max": 1.0,
-                        "step": 0.01,
-                    },
-                ),
-                "max_tokens": (
-                    "INT",
-                    {
-                        "default": 512,
-                        "min": 1,
-                        "max": 8192,
-                        "step": 1,
-                    },
-                ),
+                "system_prompt": ("STRING", {"default": "", "multiline": True}),
+                "prompt": ("STRING", {"default": "Describe the image.", "multiline": True}),
+                "temperature": ("FLOAT", {"default": 0.7, "min": 0.0, "max": 2.0, "step": 0.01}),
+                "top_p": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "top_k": ("INT", {"default": 0, "min": 0, "max": 10000, "step": 1}),
+                "repeat_penalty": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 5.0, "step": 0.01}),
+                "keep_alive": ("STRING", {"default": "", "multiline": False}),
+                "max_tokens": ("INT", {"default": 512, "min": 1, "max": 8192, "step": 1}),
             },
             "optional": {
                 "image": ("IMAGE",),
@@ -170,6 +116,9 @@ class OllamaGenerator:
         prompt: str,
         temperature: float,
         top_p: float,
+        top_k: int,
+        repeat_penalty: float,
+        keep_alive: str,
         max_tokens: int,
         image=None,
     ):
@@ -211,22 +160,42 @@ class OllamaGenerator:
         if not user_prompt and not images:
             raise RuntimeError("프롬프트와 이미지가 모두 비어 있습니다.")
 
-        payload = {
-            "model": model,
-            "prompt": user_prompt,
-            "stream": True,  # 🔹 벤치툴처럼 스트리밍 모드 사용
-            "options": {
-                "temperature": float(temperature),
-                "top_p": float(top_p),
-                "num_predict": int(max_tokens),
-            },
+        
+        options = {
+            "temperature": float(temperature),
+            "top_p": float(top_p),
+            "num_predict": int(max_tokens),
         }
+
+        # ✅ top_k: 0이면 key 자체를 넣지 않음
+        tk = int(top_k)
+        if tk > 0:
+            options["top_k"] = tk
+
+        # ✅ repeat_penalty: 0이면 key 자체를 넣지 않음
+        rp = float(repeat_penalty)
+        if rp > 0:
+            options["repeat_penalty"] = rp
+
+        payload = {
+        "model": model,
+        "prompt": user_prompt,
+        "stream": True,
+        "options": options,
+    }
 
         if system_prompt:
             payload["system"] = system_prompt
 
         if images:
             payload["images"] = images
+
+        ka = (keep_alive or "").strip()
+        if ka != "":
+            if ka.lstrip("-").isdigit():
+                payload["keep_alive"] = int(ka)
+            else:
+                payload["keep_alive"] = ka
 
         url = _build_ollama_endpoint(base_url, "/generate")
 
