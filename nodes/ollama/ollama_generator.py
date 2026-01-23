@@ -135,7 +135,7 @@ class OllamaGenerator:
             )
 
         base_url = connection.base_url
-        api_key = connection.api_key
+        api_key = (connection.api_key or "").strip()
         model = (connection.model or "").strip()
 
         if not model:
@@ -147,7 +147,7 @@ class OllamaGenerator:
         headers = {
             "Content-Type": "application/json",
         }
-        if api_key:
+        if api_key and api_key.upper() != "EMPTY":
             headers["Authorization"] = f"Bearer {api_key}"
 
         images = []
@@ -177,18 +177,22 @@ class OllamaGenerator:
         if rp > 0:
             options["repeat_penalty"] = rp
 
-        payload = {
-        "model": model,
-        "prompt": user_prompt,
-        "stream": True,
-        "options": options,
-    }
-
+        messages = []
         if system_prompt:
-            payload["system"] = system_prompt
+            messages.append({"role": "system", "content": system_prompt})
 
+        user_msg = {"role": "user", "content": user_prompt}
         if images:
-            payload["images"] = images
+            user_msg["images"] = images
+        messages.append(user_msg)
+
+        payload = {
+            "model": model,
+            "messages": messages,
+            "stream": True,
+            "options": options,
+        }
+
 
         ka = (keep_alive or "").strip()
         if ka != "":
@@ -197,7 +201,7 @@ class OllamaGenerator:
             else:
                 payload["keep_alive"] = ka
 
-        url = _build_ollama_endpoint(base_url, "/generate")
+        url = _build_ollama_endpoint(base_url, "/chat")
 
         thinking_parts = []
         answer_parts = []
@@ -226,15 +230,18 @@ class OllamaGenerator:
                     if "error" in item:
                         raise RuntimeError(str(item["error"]))
 
+                     # /api/chat 스트림은 message 안에 content/thinking 이 들어옴
+                    msg = item.get("message") or {}
+
                     # 🔹 1) reasoning 토큰
-                    t = item.get("thinking", "")
+                    t = msg.get("thinking", "") or ""
                     if t:
                         thinking_parts.append(t)
 
                     # 🔹 2) 실제 답변 토큰
-                    r = item.get("response", "")
-                    if r:
-                        answer_parts.append(r)
+                    c = msg.get("content", "") or ""
+                    if c:
+                        answer_parts.append(c)
 
                     if item.get("done"):
                         break

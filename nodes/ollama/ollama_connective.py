@@ -95,9 +95,13 @@ class OllamaConnective:
         api_key = (api_key or "").strip()
         model = (model or "").strip()
 
-        headers = {}
+        api_key_real = ""
         if api_key and api_key.upper() != "EMPTY":
-            headers["Authorization"] = f"Bearer {api_key}"
+            api_key_real = api_key
+
+        headers = {}
+        if api_key_real:
+            headers["Authorization"] = f"Bearer {api_key_real}"
 
         url = _build_ollama_endpoint(base_url, "/tags")
 
@@ -155,7 +159,7 @@ class OllamaConnective:
         )
         conn = OllamaConnection(
             base_url=base_url,
-            api_key=(api_key or None),
+            api_key=(api_key_real or None),
             model=selected_model,
             models=models,
         )
