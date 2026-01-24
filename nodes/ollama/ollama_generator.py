@@ -21,7 +21,7 @@ from .ollama_connective import OllamaConnection, _build_ollama_endpoint
 def _image_to_base64(image_tensor: torch.Tensor) -> str:
     """
     ComfyUI IMAGE (torch.Tensor [B,H,W,C], 0~1 float)을
-    Ollama /api/generate 의 images 파라미터용 base64 문자열로 변환.
+   Ollama /api/chat 의 user message(images) 파라미터용
     """
     if image_tensor is None:
         raise ValueError("image_tensor가 None 입니다.")
@@ -216,11 +216,11 @@ class OllamaGenerator:
             ) as resp:
                 if resp.status_code != 200:
                     raise RuntimeError(
-                        f"Ollama /generate 응답 오류 {resp.status_code}: {resp.text[:500]}"
+                        f"Ollama /chat 응답 오류 {resp.status_code}: {resp.text[:500]}"
                     )
 
                 for line in resp.iter_lines(decode_unicode=True):
-                    if not line:
+                    if not line or (line and line[0] != "{"):
                         continue
                     try:
                         item = json.loads(line)
@@ -247,7 +247,7 @@ class OllamaGenerator:
                         break
 
         except Exception as e:
-            raise RuntimeError(f"Ollama /generate 요청 중 오류: {e}")
+            raise RuntimeError(f"Ollama /chat 요청 중 오류: {e}")
 
         thinking_text = "".join(thinking_parts).strip()
         answer_text = "".join(answer_parts).strip()
