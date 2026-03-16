@@ -21,7 +21,7 @@ from .ollama_connective import OllamaConnection, _build_ollama_endpoint
 def _image_to_base64(image_tensor: torch.Tensor) -> str:
     """
     ComfyUI IMAGE (torch.Tensor [B,H,W,C], 0~1 float)을
-   Ollama /api/chat 의 user message(images) 파라미터용
+    Ollama /api/generate 의 images 파라미터용 base64 문자열로 변환.
     """
     if image_tensor is None:
         raise ValueError("image_tensor가 None 입니다.")
@@ -97,6 +97,8 @@ class OllamaGenerator:
                 "repeat_penalty": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 5.0, "step": 0.01}),
                 "keep_alive": ("STRING", {"default": "", "multiline": False}),
                 "max_tokens": ("INT", {"default": 512, "min": 1, "max": 8192, "step": 1}),
+                "enable_thinking": ("BOOLEAN", {"default": True}),   # 응답 분리용
+                "is_thkinking": ("BOOLEAN", {"default": True}),          # think 파라미터 전송용
             },
             "optional": {
                 "image": ("IMAGE",),
@@ -120,6 +122,8 @@ class OllamaGenerator:
         repeat_penalty: float,
         keep_alive: str,
         max_tokens: int,
+        is_thkinking: bool,        # ← 새로 추가
+        enable_thinking: bool,  # ← 위치 변경
         image=None,
     ):
         if requests is None:
@@ -178,11 +182,14 @@ class OllamaGenerator:
             options["repeat_penalty"] = rp
 
         payload = {
-        "model": model,
-        "prompt": user_prompt,
-        "stream": True,
-        "options": options,
-    }
+            "model": model,
+            "prompt": user_prompt,
+            "stream": True,
+            "options": options,
+        }
+
+        if is_thkinking:
+            payload["think"] = enable_thinking
 
         if system_prompt:
             payload["system"] = system_prompt
@@ -212,11 +219,11 @@ class OllamaGenerator:
             ) as resp:
                 if resp.status_code != 200:
                     raise RuntimeError(
-                        f"Ollama /chat 응답 오류 {resp.status_code}: {resp.text[:500]}"
+                        f"Ollama /generate 응답 오류 {resp.status_code}: {resp.text[:500]}"
                     )
 
                 for line in resp.iter_lines(decode_unicode=True):
-                    if not line or (line and line[0] != "{"):
+                    if not line:
                         continue
                     try:
                         item = json.loads(line)
@@ -240,7 +247,7 @@ class OllamaGenerator:
                         break
 
         except Exception as e:
-            raise RuntimeError(f"Ollama /chat 요청 중 오류: {e}")
+            raise RuntimeError(f"Ollama /generate 요청 중 오류: {e}")
 
         thinking_text = "".join(thinking_parts).strip()
         answer_text = "".join(answer_parts).strip()
